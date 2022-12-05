@@ -54,7 +54,6 @@
             <tr>
                 <th scope='col'>APELLIDO</th>
                 <th scope='col'>NOMBRE</th>
-                <th scope='col'>CICLO</th>
                 <th scope='col'>GRADO</th>
                 <th scope='col'>NOTA</th>
             </tr>
@@ -65,9 +64,6 @@
             </td>
             <td>
                 <?= $result['nombre'] ?>
-            </td>
-            <td>
-                <?= $result['ciclo'] ?>
             </td>
             <td>
                 <?= $result['grado'] ?>

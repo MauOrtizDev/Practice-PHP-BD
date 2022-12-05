@@ -118,9 +118,9 @@
 
         if (isset($_POST["ciclo"])) {
 
-            echo "<div style='position:absolute;top:0;right:0;background:yellow;'><pre class='text-start'>";
-            var_dump($_POST);
-            echo "</pre></div>";
+            // echo "<div style='position:absolute;top:0;right:0;background:yellow;'><pre class='text-start'>";
+            // var_dump($_POST);
+            // echo "</pre></div>";
             
             $Ciclo = intval($_POST["ciclo"]);
             $Grado = intval($_POST["grado"]);
