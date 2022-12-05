@@ -27,6 +27,7 @@
     if ($conn->connect_error) {
         die("NO SE PUEDO CONECTAR");
     }
+
     if (isset($_POST['modificar'])) {
         $idmodify = $_POST['modificar'];
         $stmt = $conn->prepare("SELECT * from Estudiantes WHERE id=$idmodify");
@@ -94,15 +95,29 @@
         <div class="mb-3">
             <label for="grado" class="form-label">GRADO</label>
             <select class="form-select" name="grado">
-                <optgroup label="Primaria">
-                    <option value="primaria;grado3" <?= $grado=='grado3' ? 'selected' : '' ?>>Grado 3</option>
-                    <option value="primaria;grado4" <?= $grado=='grado4' ? 'selected' : '' ?>>Grado 4</option>
-                    <option value="primaria;grado5" <?= $grado=='grado5' ? 'selected' : '' ?>>Grado 5</option>
-                </optgroup>
-                <optgroup label="Secundaria">
-                    <option value="secundaria;grado10" <?= $grado=='grado10' ? 'selected' : '' ?>>Grado 10</option>
-                    <option value="secundaria;grado11" <?= $grado=='grado11' ? 'selected' : '' ?>>Grado 11</option>
-                </optgroup>
+            <?php
+                $sql = "SELECT * from ciclos";
+                $result = $conn->query($sql);
+                if ($result->num_rows > 0) {
+                    while ($row = $result->fetch_assoc()) {
+                        ?>
+                        <optgroup label=<?=$row['nombre']?>>
+                            <?php
+                            $id_ciclo = $row['ID'];
+                            $sql2 = "SELECT * from grados where id_ciclo = $id_ciclo";
+                            $result2 = $conn->query($sql2);
+                            if ($result2->num_rows > 0){
+                        while ($row2 = $result2->fetch_assoc()) {
+                            ?>
+                            <option value="" <?= $grado==$row2['ID'] ? 'selected' : '' ?>><?=$row2['nombre']?></option>
+                            <?php
+                        }
+                            }
+
+                    }
+                }
+                ;
+                ?>
             </select>
         </div>
         <div class="mb-3">
