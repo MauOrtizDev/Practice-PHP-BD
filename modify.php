@@ -44,11 +44,10 @@
 
     <?php if (isset($_POST["apellido"])) {
 
-    $infoGrado = explode(';', $_POST['grado']) ?? ["",""];  
+    // $infoGrado = explode(';', $_POST['grado']) ?? ["",""];  
     $apellido = $_POST["apellido"];
     $nombre = $_POST["nombre"];
-    $grado = $infoGrado[1];
-    $ciclo = $infoGrado[0];
+    $grado = $_POST["grado"];
     $nota = $_POST["nota"];
     $id = $_POST['id'];
     $sePuedeEnviar = true;
@@ -66,9 +65,9 @@
         $sePuedeEnviar = false;
     }
     if ($sePuedeEnviar) {
-        $sql = "UPDATE Estudiantes SET apellido=?, nombre=?, grado=?, ciclo=?, nota=? WHERE id=?";
+        $sql = "UPDATE Estudiantes SET apellido=?, nombre=?, grado=?, nota=? WHERE id=?";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("sssssi", $apellido, $nombre, $grado, $ciclo, $nota, $id);
+        $stmt->bind_param("ssssi", $apellido, $nombre, $grado, $nota, $id);
         $stmt->execute();
         echo '<script>
             alert("Actualización llevada a cabo con éxito.");
@@ -109,7 +108,7 @@
                             if ($result2->num_rows > 0){
                         while ($row2 = $result2->fetch_assoc()) {
                             ?>
-                            <option value="" <?= $grado==$row2['ID'] ? 'selected' : '' ?>><?=$row2['nombre']?></option>
+                            <option value=<?=$row2['ID']?> <?= $grado==$row2['ID'] ? 'selected' : '' ?>><?=$row2['nombre']?></option>
                             <?php
                         }
                             }
