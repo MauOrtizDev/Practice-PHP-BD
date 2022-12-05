@@ -15,201 +15,263 @@
 </head>
 
 <body>
-
-    <h1>INSTITUCIÓN EDUCATIVA EL GUINEO</h1>
-    <h2>Mostrar base de datos de Estudiantes:</h2>
-    <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
-        <label for="ciclo">Ciclo</label>
+    <div class="container text-center">
+        <h1>INSTITUCIÓN EDUCATIVA EL GUINEO</h1>
+        <h2>Mostrar base de datos de Estudiantes:</h2>
         <?php
-        function verificarSeleccionado($name, $key)
-        {
-            $selected = (isset($_POST[$name]) && $_POST[$name] == $key) ? 'selected' : '';
-            return $selected;
-        }
-        ?>
-        <?php
-        $options = [
-            'Todos' => 'Todos',
-            'Primaria' => 'Primaria',
-            'Secundaria' => 'Secundaria',
-        ];
-        ?>
+        $servername = "localhost";
+        $username = "prueba";
+        $password = ".q1.w2.e3";
+        $dbname = "COLEGIO";
 
-        <select name="ciclo" id="ciclo">
-            <?php foreach ($options as $key => $label) { ?>
-            <option value="<?= $key ?>" <?= verificarSeleccionado('ciclo', $key); ?>><?= $label ?>
-            </option>
-            <?php } ?>
-        </select>
-        <label for="secundaria" id="labelGrado">Grados</label>
+        $conn = new mysqli($servername, $username, $password, $dbname);
 
-        <?php
-        $options = [
-            'Todos' => 'Todos',
-            'grado10' => 'Grado 10',
-            'grado11' => 'Grado 11',
-        ];
-        ?>
-
-        <select name="secundaria" id="secundaria" <?='style="display:inline;"' ?>>
-            <?php foreach ($options as $key => $label) { ?>
-            <option value="<?= $key ?>" <?= verificarSeleccionado('secundaria', $key); ?>><?= $label ?>
-            </option>
-            <?php } ?>
-        </select>
-
-        <?php
-
-        /**
-         * TABLE: Grados
-         * ID
-         * nombre_del_grado
-         * identificacion: grado3
-         * 
-         * Crear un seccion en el sistema qu enos permita añadir nuevos grados (CRUD)
-         * Reasignar estudiantes del grado a otro grado
-        */
-        $options = [
-            'Todos' => 'Todos',
-            'grado3' => 'Grado 3',
-            'grado4' => 'Grado 4',
-            'grado5' => 'Grado 5',
-        ];
-        ?>
-
-        <select name="primaria" id="primaria">
-            <?php foreach ($options as $key => $label) { ?>
-            <option value="<?= $key ?>" <?= verificarSeleccionado('primaria', $key); ?>><?= $label ?>
-            </option>
-            <?php } ?>
-        </select>
-        <label for="orden" id="orden">Orden:</label>
-        <?php
-        $options = [
-            'ID' => 'Por defecto',
-            'apellido' => 'Por apellidos',
-            'nota' => 'Por promedio',
-        ];
-        ?>
-
-        <select name="orden" id="orden">
-            <?php foreach ($options as $key => $label) { ?>
-            <option value="<?= $key ?>" <?= verificarSeleccionado('orden', $key); ?>><?= $label ?>
-            </option>
-            <?php } ?>
-        </select>
-        <br>
-        <input type="submit" value="MOSTRAR">
-    </form>
-    <?php
-    $servername = "localhost";
-    $username = "prueba";
-    $password = ".q1.w2.e3";
-    $dbname = "COLEGIO";
-
-    $conn = new mysqli($servername, $username, $password, $dbname);
-
-    if ($conn->connect_error) {
-        echo "No se pudo conectar a la Base de Datos";
-    } else {
-        echo "CONECTADO CON ÉXITO";
-    }
-
-    $ciclo_stmt = "";
-    $grado_stmt = "";
-
-    if (isset($_POST["ciclo"])) {
-        $Ciclo = $_POST["ciclo"];
-        $ciclo_stmt = "ciclo = '$Ciclo'";
-        if ($Ciclo == "Secundaria") {
-            $Grado = $_POST["secundaria"];
-            if ($Grado == "Todos") {
-                $grado_stmt = true;
-            } else {
-                $grado_stmt = "grado = '$Grado'";
-
-            }
-        } elseif ($Ciclo == "Primaria") {
-            $Grado = $_POST["primaria"];
-            if ($Grado == "Todos") {
-                $grado_stmt = true;
-            } else {
-                $grado_stmt = "grado = '$Grado'";
-
-            }
+        if ($conn->connect_error) {
+            echo "No se pudo conectar a la Base de Datos";
         } else {
-            ($Grado = "Todos");
-            $ciclo_stmt = true;
-            $grado_stmt = true;
+            echo "CONECTADO CON ÉXITO";
         }
-        $Grado = lcfirst($Grado);
+        ?>
+        <form method="post" action='<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>'>
+            <div class="row justify-content-center g-3">
+                <div class="col-auto">
+                    <label for="ciclo" class="form-label">Ciclo</label>
+                    <?php
+                    function verificarSeleccionado($name, $key)
+                    {
+                        $selected = (isset($_POST[$name]) && $_POST[$name] == $key) ? 'selected' : '';
+                        return $selected;
+                    }
+                    ?>
+                    <?php
 
-        $Orden = $_POST["orden"];
-        $Orden == "nota" ? $Orden .= " DESC" : true;
+                    $sql = "SELECT * from ciclos";
+                    $result = $conn->query($sql);
+                    $optionsCiclo = ['-1' => 'Todos'];
 
+                    if ($result->num_rows > 0) {
+                        while ($row = $result->fetch_assoc()) {
+                            $optionsCiclo += [$row["ID"] => $row["nombre"]];
+                        }
+                    }
+                    ;
+                    ?>
 
-        $sql = $conn->prepare("SELECT * from Estudiantes WHERE $ciclo_stmt and $grado_stmt ORDER BY " . $Orden);
-        $sql->execute();
+                    <select class="form-select" name="ciclo" id="ciclo">
+                        <?php foreach ($optionsCiclo as $key => $label) { ?>
+                        <option value="<?= $key ?>" <?= verificarSeleccionado('ciclo', $key); ?>><?= $label ?>
+                        </option>
+                        <?php } ?>
+                    </select>
+                </div>
 
-        $result = $sql->get_result();
+                <div class="col-auto">
+                    <label for="grado" class="form-label" id="labelGrado">Grado</label>
 
-        if ($result->num_rows > 0) {
-    ?>
-    <table class='table table-striped'>
-        <thead>
-            <tr>
-                <th scope='col'>Num.</th>
-                <th scope='col'>APELLIDO</th>
-                <th scope='col'>NOMBRE</th>
-                <th scope='col'>GRADO</th>
-                <th scope='col'>NOTA</th>
-                <th scope='col'>ACCIÓN</th>
-            </tr>
-        </thead>
+                    <?php
+                    $sql = "SELECT * from grados";
+                    $result = $conn->query($sql);
+                    $optionsGrado = ['-1' => 'Todos'];
+
+                    if ($result->num_rows > 0) {
+                        while ($row = $result->fetch_assoc()) {
+                            $optionsGrado += [$row["ID"] => $row["nombre"]];
+                        }
+                    }
+                    ;
+                    ?>
+
+                    <select class="form-select" name="grado" id="grado" <?='style="display:inline;"' ?>>
+                        <?php foreach ($optionsGrado as $key => $label) {
+                            $sql = "SELECT nombre from ciclos where ID=(SELECT ID_ciclo from grados WHERE id=$key)";
+                            $result = $conn->query($sql)->fetch_assoc();
+                        ?>
+                        <option class="<?= $result['nombre'] ?? "" ?>" value="<?= $key ?>" <?=
+                            verificarSeleccionado('grado', $key); ?>><?= $label ?>
+
+                        </option>
+                        <?php } ?>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <label for="orden" class="form-label" id="orden">Orden:</label>
+                    <?php
+                    $options = [
+                        'ID' => 'Por defecto',
+                        'apellido' => 'Por apellidos',
+                        'nota' => 'Por promedio',
+                    ];
+                    ?>
+
+                    <select class="form-select" name="orden" id="orden">
+                        <?php foreach ($options as $key => $label) { ?>
+                        <option value="<?= $key ?>" <?= verificarSeleccionado('orden', $key); ?>><?= $label ?>
+                        </option>
+                        <?php } ?>
+                    </select>
+                </div>
+                <input type="submit" value="MOSTRAR">
+            </div>
+        </form>
+
         <?php
-            $numeral = 0;
-            while ($row = $result->fetch_assoc()) {
-                $numeral++; ?>
-        <tr>
-            <th scope='row'>
-                <?= $numeral ?>
-            </th>
-            <td>
-                <?= $row['apellido'] ?>
-            </td>
-            <td>
-                <?= $row['nombre'] ?>
-            </td>
-            <td>
-                <?= $row['grado'] ?>
-            </td>
-            <td>
-                <?= $row['nota'] ?>
-            </td>
-            <td>
-                <span class='btn-group'>
-                    <form method='POST' action='modify.php'>
-                        <button type='submit' class='btn btn-primary' name='modificar' value=<?= $row['id'] ?>>
-                            <b>Modificar</b>
-                        </button>
-                    </form>
-                    <form method='POST' action='eliminate.php'>
-                        <button type='submit' class='btn btn-danger' name='eliminar' value=<?= $row['id'] ?>>
-                            <b>X</b>
-                        </button>
-                    </form>
-                </span>
-            </td>
-        </tr>
+
+        if (isset($_POST["ciclo"])) {
+
+            echo "<div style='position:absolute;top:0;right:0;background:yellow;'><pre class='text-start'>";
+            var_dump($_POST);
+            echo "</pre></div>";
+            
+            $Ciclo = intval($_POST["ciclo"]);
+            $Grado = intval($_POST["grado"]);
+            $Orden = $_POST['orden'];
+            $Orden == "nota" ? $Orden .= " DESC" : true;
+
+            if($Ciclo < 0){
+                $sql = $conn->prepare("SELECT * from estudiantes ORDER BY $Orden");
+            } elseif($Grado < 0){
+                $sql = $conn->prepare("SELECT * from estudiantes where grado in (select id from grados where id_ciclo = $Ciclo) ORDER BY $Orden");
+            } else {
+                $sql = $conn->prepare("SELECT * from estudiantes where grado = $Grado ORDER BY $Orden");
+            }
+            ;
+            
+            $sql->execute();
+
+            // // POR AQUI VOY
+        
+            // $ciclo_stmt = "ciclo = ";
+            // $grado_stmt = "grado = ";
+        
+            // if($Ciclo = -1){
+            //     $ciclo_stmt = true;
+            //     $grado_stmt = true;
+            // } elseif ($){
+        
+            // }
+        
+            // $ciclo_stmt = "ciclo = ".$Ciclo;
+            // if ($Ciclo == "Secundaria") {
+            //     $Grado = $_POST["secundaria"];
+            //     if ($Grado == "Todos") {
+            //         $grado_stmt = true;
+            //     } else {
+            //         $grado_stmt = "grado = '$Grado'";
+        
+            //     }
+            // } elseif ($Ciclo == "Primaria") {
+            //     $Grado = $_POST["primaria"];
+            //     if ($Grado == "Todos") {
+            //         $grado_stmt = true;
+            //     } else {
+            //         $grado_stmt = "grado = '$Grado'";
+        
+            //     }
+            // } else {
+            //     ($Grado = "Todos");
+            //     $ciclo_stmt = true;
+            //     $grado_stmt = true;
+            // }
+            // $Grado = lcfirst($Grado);
+        
+            // $Orden = $_POST["orden"];
+            // $Orden == "nota" ? $Orden .= " DESC" : true;
+        
+
+
+
+            // $Ciclo = $_POST["ciclo"];
+            // $Grado = $_POST["grado"];
+            // // POR AQUI VOY
+            // $ciclo_stmt = "ciclo = '$Ciclo'";
+            // if ($Ciclo == "Secundaria") {
+            //     $Grado = $_POST["secundaria"];
+            //     if ($Grado == "Todos") {
+            //         $grado_stmt = true;
+            //     } else {
+            //         $grado_stmt = "grado = '$Grado'";
+
+            //     }
+            // } elseif ($Ciclo == "Primaria") {
+            //     $Grado = $_POST["primaria"];
+            //     if ($Grado == "Todos") {
+            //         $grado_stmt = true;
+            //     } else {
+            //         $grado_stmt = "grado = '$Grado'";
+
+            //     }
+            // } else {
+            //     ($Grado = "Todos");
+            //     $ciclo_stmt = true;
+            //     $grado_stmt = true;
+            // }
+            // $Grado = lcfirst($Grado);
+
+            // $Orden = $_POST["orden"];
+            // $Orden == "nota" ? $Orden .= " DESC" : true;
+
+            // $sql = $conn->prepare("SELECT * from Estudiantes WHERE $ciclo_stmt and $grado_stmt ORDER BY " . $Orden);
+            // $sql->execute();
+
+            $result = $sql->get_result();
+
+            if ($result->num_rows > 0) { ?>
+        <table class='table table-striped'>
+            <thead>
+                <tr>
+                    <th scope='col'>Num.</th>
+                    <th scope='col'>APELLIDO</th>
+                    <th scope='col'>NOMBRE</th>
+                    <th scope='col'>GRADO</th>
+                    <th scope='col'>NOTA</th>
+                    <th scope='col'>ACCIÓN</th>
+                </tr>
+            </thead>
+            <?php
+                $numeral = 0;
+                while ($row = $result->fetch_assoc()) {
+                    $numeral++; ?>
+            <tr>
+                <th scope='row'>
+                    <?= $numeral ?>
+                </th>
+                <td>
+                    <?= $row['apellido'] ?>
+                </td>
+                <td>
+                    <?= $row['nombre'] ?>
+                </td>
+                <td>
+                    <?= $row['grado'] ?>
+                </td>
+                <td>
+                    <?= $row['nota'] ?>
+                </td>
+                <td>
+                    <span class='btn-group'>
+                        <form method='POST' action='modify.php'>
+                            <button type='submit' class='btn btn-primary' name='modificar' value=<?= $row['id'] ?>>
+                                <b>Modificar</b>
+                            </button>
+                        </form>
+                        <form method='POST' action='eliminate.php'>
+                            <button type='submit' class='btn btn-danger' name='eliminar' value=<?= $row['id'] ?>>
+                                <b>X</b>
+                            </button>
+                        </form>
+                    </span>
+                </td>
+            </tr>
+            <?php
+                }
+            ?>
+        </table>
         <?php
             }
-        ?>
-    </table>
-    <?php
         }
-    }
 
         ?>
+    </div>
 
 </body>
 
