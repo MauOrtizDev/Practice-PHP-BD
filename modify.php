@@ -15,6 +15,7 @@
 
 <body>
     <h1>INSTITUCIÓN EDUCATIVA EL GUINEO</h1>
+    
     <h2>Modificar registro de estudiante:</h2>
 
     <?php
